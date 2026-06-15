@@ -37,8 +37,8 @@ INSERT INTO Matches (match_id, fixture, tournament_category, base_ticket_price, 
 
 CREATE TABLE Bookings (
     booking_id INT PRIMARY KEY,
-    user_id INT REFERENCES users(user_id) NOT NULL,
-    match_id INT REFERENCES matches(match_id) NOT NULL,
+    user_id INT REFERENCES Users(user_id) NOT NULL,
+    match_id INT REFERENCES Matches(match_id) NOT NULL,
     seat_number VARCHAR(10),
     payment_status VARCHAR(20) CHECK(payment_status IN ('Pending', 'Confirmed', 'Cancelled', 'Refunded')),
     total_cost DECIMAL(10,2) NOT NULL
@@ -56,7 +56,7 @@ INSERT INTO Bookings (booking_id, user_id, match_id, seat_number, payment_status
 SELECT match_id,
   fixture,
   base_ticket_price 
-  FROM matches 
+  FROM Matches 
   WHERE tournament_category = 'Champions League' 
   AND match_status = 'Available';
 
@@ -87,14 +87,14 @@ Matches.fixture,
   INNER JOIN Users ON 
    Bookings.user_id = Users.user_id
   INNER JOIN Matches
-  ON Bookings.match_id = Matches.match_id
+  ON Bookings.match_id = Matches.match_id;
 
 
 -- Query 5: Display a comprehensive list of all users and their booking IDs, ensuring that fans who have never bought a ticket are still listed.
 SELECT USERS.user_id,
 Users.full_name,
 Bookings.booking_id
-FROM users
+FROM Users
 LEFT JOIN 
 Bookings ON 
 Users.User_id = Bookings.User_id;
@@ -107,7 +107,7 @@ FROM Bookings
 WHERE total_cost > (
  SELECT AVG(total_cost)
   FROM Bookings
-)
+);
 
 -- Query 7: Retrieve the top 2 most expensive matches sorted by base ticket price, skipping the absolute highest premium match.
 
